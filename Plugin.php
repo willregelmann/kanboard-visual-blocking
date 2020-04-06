@@ -5,11 +5,18 @@ namespace Kanboard\Plugin\VisualBlocking;
 use Kanboard\Core\Plugin\Base;
 use Kanboard\Core\Translator;
 
+use Kanboard\Plugin\VisualBlocking\Filter\Blocked;
+
 class Plugin extends Base
 {
-    public function initialize()
-    {
-    }
+		public function initialize(){
+
+		//Task Filter
+		$this->container->extend('taskLexer', function($taskLexer, $c) {
+			$taskLexer->withFilter(Blocked::getInstance()->setCurrentUserId($c['userSession']->getId())->setDatabase($c['db']));
+			return $taskLexer;
+		});
+	}
 
     public function onStartup()
     {
