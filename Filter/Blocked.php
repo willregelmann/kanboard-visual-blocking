@@ -25,7 +25,7 @@ class Blocked extends BaseFilter implements FilterInterface {
   }
 
   public function getAttributes(){
-    return array('is_blocked');
+    return array('blocked');
   }
 
   public function apply(){

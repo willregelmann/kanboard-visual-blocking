@@ -1,0 +1,7 @@
+.task-board-title {
+  display: table-cell;
+}
+
+.task-board-icons>.task-board-avatars {
+  display:none;
+}
