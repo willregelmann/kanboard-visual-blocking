@@ -1,9 +1,13 @@
 <?php
 
-use Kanboard\Model\TaskModel;
-use Kanboard\Model\TaskLinkModel;
-use PicoDb\Database;
-use PicoDb\Table;
+use Kanboard\Model\{
+    TaskModel,
+    TaskLinkModel
+};
+use PicoDb\{
+    Database,
+    Table
+};
 
 if ($task['nb_links'] > 0) {
   $subquery = $database->table(TaskLinkModel::TABLE)->columns(

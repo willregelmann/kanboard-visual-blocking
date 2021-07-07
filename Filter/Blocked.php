@@ -4,41 +4,42 @@ namespace Kanboard\Plugin\VisualBlocking\Filter;
 
 use Kanboard\Core\Filter\FilterInterface;
 use Kanboard\Filter\BaseFilter;
-use Kanboard\Model\TaskModel;
-use Kanboard\Model\TaskLinkModel;
-use PicoDb\Database;
-use PicoDb\Table;
+use Kanboard\Model\{
+    TaskModel,
+    TaskLinkModel
+};
+use PicoDb\{
+    Database,
+    Table
+};
 
 class Blocked extends BaseFilter implements FilterInterface {
 	  
-  private $db;
-  private $currentUserId = 0;
+  private Database $db;
+  private int $currentUserId = 0;
   
-  public function setCurrentUserId($userId){
+  public function setCurrentUserId(int $userId):Blocked {
     $this->currentUserId = $userId;
 	return $this;
   }
 
-  public function setDatabase(Database $db){
+  public function setDatabase(Database $db):Blocked {
     $this->db = $db;
 	return $this;
   }
 
-  public function getAttributes(){
-    return array('blocked');
+  public function getAttributes():array {
+    return ['blocked'];
   }
 
-  public function apply(){
+  public function apply():Blocked {
 	$task_ids = $this->getSubQuery()->findAllByColumn(TaskLinkModel::TABLE.'.task_id');
-	if ($this->value == 'true') {
-	  $this->query->in(TaskModel::TABLE.'.id', $task_ids);
-	} else if ($this->value == 'false') {
-      $this->query->notIn(TaskModel::TABLE.'.id', $task_ids);
-	}
+    $fn = $this->value ? 'in' : 'notIn';
+    $this->query->$fn(TaskModel::TABLE.'.id', $task_ids);
     return $this;
   }
 
-  protected function getSubQuery(){
+  protected function getSubQuery():Table {
     $subquery = $this->db->table(TaskLinkModel::TABLE)->columns(
 		TaskLinkModel::TABLE.'.task_id',
 		TaskLinkModel::TABLE.'.opposite_task_id',
@@ -48,7 +49,7 @@ class Blocked extends BaseFilter implements FilterInterface {
     return $this->applySubQueryFilter($subquery);
   }
 
-  protected function applySubQueryFilter(Table $subquery){
+  protected function applySubQueryFilter(Table $subquery):Table {
     $subquery->eq(TaskLinkModel::TABLE.'.link_id',3);
 	$subquery->eq(TaskModel::TABLE.'.is_active',1);
 	return $subquery;
